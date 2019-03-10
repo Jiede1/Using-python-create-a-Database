@@ -8,7 +8,7 @@ import json
 
 # 数据库核心模块序列化接口
 class SerializedInterface:
-    json = json # 内部定义一个 json 对象，方便后续操作不需要 import
+    json = json    # 内部定义一个 json 对象，方便后续操作不需要 import
 
     # 反序列化方法
     @staticmethod

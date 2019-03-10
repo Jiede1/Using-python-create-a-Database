@@ -8,7 +8,7 @@ from pmydb.core import SerializedInterface
 class Field(SerializedInterface):
     def __init__(self, data_type, keys=FieldKey.NULL, default=None):
         self.__type = data_type  # 字段的数据类型
-        self.__keys = keys  # 字段的数据约束
+        self.__keys = keys  # 字段的数据约束  list类型
         self.__default = default  # 默认值
         self.__values = []  # 字段数据
         self.__rows = 0  # 字段数据长度
@@ -49,7 +49,7 @@ class Field(SerializedInterface):
     # 判断指定位置数据是否存在
     def __check_index(self, index):
         # 如果指定位置不存在，抛出不存在该元素异常
-        if not isinstance(index, int) or not -index < self.__rows > index:
+        if not isinstance(index, int) or not 0 <= self.__rows > index:
             raise Exception('Not this element')
         return True
 
@@ -135,6 +135,32 @@ class Field(SerializedInterface):
 
         # 修改数据
         self.__values[index] = value
+
+    def serialized(self):
+        return SerializedInterface.json.dumps({
+            'value': self.__values,
+            'type': self.__type,
+            'keys': self.__keys,
+            'default': self.__default,
+        })
+
+    @staticmethod
+    def deserialized(data):
+        # 将数据转化为 Json 对象
+        json_data = SerializedInterface.json.loads(data)
+
+        # 转换 Json 对象中 key 的值为枚举类 FieldKey 中的属性
+        keys = [FieldKey(key) for key in json_data['key']]
+
+        # 传入解析出来的数据类型和字段键并实例化一个 Field 对象
+        obj = Field(FieldType(json_data['type']), keys, default=json_data['default'])
+
+        # 为 Field 对象绑定数据
+        for value in json_data['values']:
+            obj.add(value)
+
+        # 返回该 Field 对象
+        return obj
 
 
 

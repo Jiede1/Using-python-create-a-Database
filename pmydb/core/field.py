@@ -139,8 +139,8 @@ class Field(SerializedInterface):
     def serialized(self):
         return SerializedInterface.json.dumps({
             'value': self.__values,
-            'type': self.__type,
-            'keys': self.__keys,
+            'type': self.__type.value,
+            'keys': [key.value for key in self.__keys],
             'default': self.__default,
         })
 

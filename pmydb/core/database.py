@@ -23,6 +23,7 @@ class Database(SerializedInterface):
         # 新建一个数据表对象，并且与数据表名字关联绑定
         self.__table_objs[table_name] = Table(**options)
 
+    # 删除数据表
     def drop_tables(self,table_name):
         if table_name not in self.__table_names:
             raise Exception('table not exist')
@@ -52,7 +53,7 @@ class Database(SerializedInterface):
 
         if isinstance(index, int) and -index < length > index:
             return self.__table_names[index]
-        return self.__table_names
+        return self.__table_names        # 返回所有的table name
 
     # 添加数据表
     def add_table(self, table_name, table):

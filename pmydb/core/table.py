@@ -81,8 +81,8 @@ class Table(SerializedInterface):
             match_index = range(0, self.__rows)
             return match_index
 
-    def __get_field_data(self,field_name, index):
-        result = self.__field_objs[field_name].get_data[index]
+    def __get_field_data(self, field_name, index):
+        result = self.__field_objs[field_name].get_data(index)
         return result
 
     # 查询数据
@@ -113,6 +113,7 @@ class Table(SerializedInterface):
                 row = {}
                 for field_name in fields:
                     row[field_name] = self.__get_field_data(field_name, index)
+                    # print('row:',row[field_name])
             # 如果找不到类型，抛出格式错误异常
             else:
                 raise Exception('format type invalid')

@@ -1,13 +1,31 @@
 #  coding = utf-8
 #  @Author Jiede1
-#  @Time 2019/03/12
+#  @Time 2019/03/17
 
 from pmydb.core.database import Database
 from pmydb.core import SerializedInterface
+import base64
+
+'''
+(1)json.dumps()函数是将一个Python数据类型列表进行json格式的编码（可以这么理解，json.dumps()函数是将字典转化为字符串）
+(2)json.loads()函数是将json格式数据转换为字典（可以这么理解，json.loads()函数是将字符串转化为字典）
+'''
+
+# 解码数据
+def _decode_db(content):
+    content = base64.decodebytes(content)
+    return content.decode()[::-1]
+
+
+# 编码数据
+def _encode_db(content):
+    content = content[::-1].encode()
+    return base64.encodebytes(content)
+
 
 # 数据库引擎
 class Engine:
-    def __init__(self, db_name=None, format_type='dict'):
+    def __init__(self, db_name=None, format_type ='dict', path='db.data'):
         ...
         self.__current_db = None  # 标示当前使用的数据库
 
@@ -16,6 +34,8 @@ class Engine:
             self.select_db(db_name)
         self.__database_objs = {}       # 数据库映射表
         self.__database_names = []      # 数据库名字集合
+
+        self.path = path
 
     # 创建数据库
     def create_database(self, database_name):
@@ -46,6 +66,19 @@ class Engine:
 
         # 将对应名字的 Database 对象赋值给 __current_db
         self.__current_db = self.__database_objs[db_name]
+
+    def serialized(self):
+        return SerializedInterface.json.dumps([ \
+             database.serialized() for database in self.__database_objs.values() \
+        ])
+
+    def __dump_database(self):
+        with open(self.path,'w') as f:
+            # 编码json字符串
+            content = _encode_db(self.serialized())
+            f.write(content)
+
+
 
 
 

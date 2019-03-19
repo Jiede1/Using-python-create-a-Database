@@ -81,6 +81,14 @@ class Field(SerializedInterface):
     def length(self):
         return self.__rows
 
+    # 获取字段数据约束
+    def get_keys(self):
+        return self.__keys
+
+    # 获取字段类型
+    def get_type(self):
+        return self.__type
+
     # 获取数据
     def get_data(self, index=None):
         # 如果 index 参数为整型，则返回指定位置数据，反之返回所有数据

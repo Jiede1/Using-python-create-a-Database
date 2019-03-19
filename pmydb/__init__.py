@@ -1,10 +1,11 @@
 #  coding = utf-8
 #  @Author Jiede1
-#  @Time 2019/03/17
+#  @Time 2019/03/18
 
 from pmydb.core.database import Database
 from pmydb.core import SerializedInterface
 import base64
+import os
 
 '''
 (1)json.dumps()函数是将一个Python数据类型列表进行json格式的编码（可以这么理解，json.dumps()函数是将字典转化为字符串）
@@ -17,7 +18,7 @@ def _decode_db(content):
     return content.decode()[::-1]
 
 
-# 编码数据
+# 编码数据 str-->bytes-->base64 逆序
 def _encode_db(content):
     content = content[::-1].encode()
     return base64.encodebytes(content)
@@ -36,6 +37,8 @@ class Engine:
         self.__database_names = []      # 数据库名字集合
 
         self.path = path
+
+        self.__format_type = format_type  # 数据默认返回格式
 
     # 创建数据库
     def create_database(self, database_name):
@@ -72,11 +75,111 @@ class Engine:
              database.serialized() for database in self.__database_objs.values() \
         ])
 
+    #保存数据库
     def __dump_database(self):
         with open(self.path,'w') as f:
             # 编码json字符串
             content = _encode_db(self.serialized())
             f.write(content)
+
+    def deserialized(self, content):
+        data_obj = SerializedInterface.json.loads(content)
+
+        for database in data_obj:
+            database = Database.deserialized(database)
+            # 获取数据库名字
+            db_name = database.get_name()
+
+            # 追加数据库名字和绑定数据库对象
+            self.__database_names.append(db_name)
+            self.__database_objs[db_name] = database
+
+    #加载数据库
+    def __load_database(self):
+        if not os.path.exists(self.path):
+            return
+        with open(self.path,'rb') as f:
+            content = f.read()
+
+        if content:
+            # 解码数据，并把数据传给反序列化函数
+            self.deserialized(_decode_db(content))
+
+    # 查询指定数据表数据
+    def search(self, table_name, fields='*', sort='ASC', **conditions):
+        # 通过数据表名字获取指定的 Table 对象，再调用它的 search 方法获取查询结果
+        return self.__get_table(table_name).search(fields=fields, sort=sort, format_type=self.__format_type,
+                                                   **conditions)
+
+    # 获取数据表
+    def __get_table(self, table_name):
+
+        # 判断当前是否有选中的数据库
+        self.__check_is_choose()
+
+        # 获取对应的 Table 对象
+        table = self.__current_db.get_table_obj(table_name)
+
+        # 如果 Table 对象为空，抛出异常
+        if table is None:
+            raise Exception('not table %s' % table_name)
+
+        # 返回 Table 对象
+        return table
+
+    # 检查是否选择数据库
+    def __check_is_choose(self):
+        # 如果当前没有选中的数据库，抛出为选择数据库异常
+        if not self.__current_db or not isinstance(self.__current_db, Database):
+            raise Exception('No database choose')
+
+    def insert(self,table_name,**data):
+        return self.__get_table(table_name).insert(**data)
+
+    # 删除指定数据表数据
+    def delete(self, table_name, **conditions):
+        return self.__get_table(table_name).delete(**conditions)
+
+    # 更新指定数据表数据
+    def update(self, table_name, data, **conditions):
+        self.__get_table(table_name).update(data, **conditions)
+
+    # 实现外部接口
+    # 创建数据表
+    def create_table(self, name, **options):
+        self.__check_is_choose()
+        self.__current_db.create_table(name, **options)
+
+    # 获取数据库名
+    def get_database(self, format_type='list'):
+        databases = self.__database_names
+
+        if format_type == 'dict':
+            tmp = []
+            for database in databases:
+                tmp.append({'name': database})
+
+            databases = tmp
+
+        return databases
+
+    # 获取数据表
+    def get_table(self, format_type='list'):
+        self.__check_is_choose()
+
+        tables = self.__current_db.get_table()
+
+        if format_type == 'dict':
+            tmp = []
+            for table in tables:
+                tmp.append({'name': table})
+
+            tables = tmp
+
+        return tables
+
+
+
 
 
 

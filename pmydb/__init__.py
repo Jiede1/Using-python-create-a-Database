@@ -38,6 +38,9 @@ class Engine:
 
         self.path = path
 
+        self.__load_databases()
+
+
         self.__format_type = format_type  # 数据默认返回格式
 
     # 创建数据库
@@ -71,15 +74,16 @@ class Engine:
         self.__current_db = self.__database_objs[db_name]
 
     def serialized(self):
-        return SerializedInterface.json.dumps([ \
-             database.serialized() for database in self.__database_objs.values() \
+        return SerializedInterface.json.dumps([  \
+             database.serialized() for database in self.__database_objs.values()  \
         ])
 
     #保存数据库
-    def __dump_database(self):
-        with open(self.path,'w') as f:
+    def __dump_databases(self):
+        with open(self.path, 'wb') as f:
             # 编码json字符串
-            content = _encode_db(self.serialized())
+            a = self.serialized()
+            content = _encode_db(a)
             f.write(content)
 
     def deserialized(self, content):
@@ -95,15 +99,23 @@ class Engine:
             self.__database_objs[db_name] = database
 
     #加载数据库
-    def __load_database(self):
+    def __load_databases(self):
         if not os.path.exists(self.path):
             return
-        with open(self.path,'rb') as f:
+        with open(self.path, 'rb') as f:
             content = f.read()
 
         if content:
             # 解码数据，并把数据传给反序列化函数
             self.deserialized(_decode_db(content))
+
+    # 提交数据库改动
+    def commit(self):
+        self.__dump_databases()
+
+    # 回滚数据库改动
+    def rollback(self):
+        self.__load_databases()
 
     # 查询指定数据表数据
     def search(self, table_name, fields='*', sort='ASC', **conditions):

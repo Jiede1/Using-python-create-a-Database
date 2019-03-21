@@ -117,5 +117,6 @@ e.insert(table_name='t_test', f_name='shiyanlou_002')
 # 查询 t_test 表中的数据，并打印出来
 ret = e.search('t_test')
 for row in ret:
-    print(row)
+    print('row:', row)
+print(FieldType.INT.value)
 

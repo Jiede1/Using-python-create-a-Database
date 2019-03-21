@@ -146,7 +146,7 @@ class Field(SerializedInterface):
 
     def serialized(self):
         return SerializedInterface.json.dumps({
-            'value': self.__values,
+            'values': self.__values,
             'type': self.__type.value,
             'keys': [key.value for key in self.__keys],
             'default': self.__default,
@@ -156,9 +156,10 @@ class Field(SerializedInterface):
     def deserialized(data):
         # 将数据转化为 Json 对象
         json_data = SerializedInterface.json.loads(data)
+        print('json_data:',json_data)
 
         # 转换 Json 对象中 key 的值为枚举类 FieldKey 中的属性
-        keys = [FieldKey(key) for key in json_data['key']]
+        keys = [FieldKey(key) for key in json_data['keys']]
 
         # 传入解析出来的数据类型和字段键并实例化一个 Field 对象
         obj = Field(FieldType(json_data['type']), keys, default=json_data['default'])

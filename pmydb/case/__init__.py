@@ -1,4 +1,4 @@
-from syldb.core import TYPE_MAP
+from pmydb.core import TYPE_MAP
 
 LIKE_SYMBOL = '%'
 
@@ -62,9 +62,8 @@ SYMBOL_MAP = {
     'LIKE': __like,
     'RANGE': __range
 }
-
+# 条件基类
 class BaseCase:
-
     def __init__(self, condition, symbol):
         self.condition = condition
         self.symbol = symbol
@@ -79,6 +78,7 @@ class BaseCase:
 
         return SYMBOL_MAP[self.symbol](data, self.condition)
 
+# 将多种
 class BaseListCase(BaseCase):
 
     def __call__(self, data, data_type):

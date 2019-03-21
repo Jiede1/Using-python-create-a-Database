@@ -83,14 +83,15 @@ class Database(SerializedInterface):
     def deserialized(data):
         json_data = SerializedInterface.json.loads(data)
 
-        database = Database(json_data['name'])
+        # 使用解析出来的数据库名字实例化一个 Database 对象
+        obj_tmp = Database(json_data['name'])
 
         # 遍历所有 Table Json 字符串，依次调用 Table 对象的反序列化方法，再添加到刚刚实例化出来的 Database 对象中
-        for tb_name, tb_data in json_data['tables']:
-            database.create_table(tb_name, Table.deserialized(tb_data))
+        for table_name, table_obj in json_data['tables']:
+            obj_tmp.add_table(table_name, Table.deserialized(table_obj))
 
-        return database
-
+        # 返回 Database 对象
+        return obj_tmp
 
 
 

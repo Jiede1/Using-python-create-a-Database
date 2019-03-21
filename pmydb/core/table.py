@@ -4,6 +4,7 @@
 
 from pmydb.core import SerializedInterface
 from pmydb.core.field import Field
+from pmydb.case import BaseCase
 
 
 # 数据表对象
@@ -67,7 +68,9 @@ class Table(SerializedInterface):
             raise Exception('%s field not exists' % field_name)
         return self.__field_objs[field_name]
 
+    '''
     def __parse_conditions(self,**conditions):
+        
         # 如果条件为空或者为 index='*'，数据索引为所有，反之为匹配条件的索引
         if 'index' in conditions:
             if conditions['index'] == '*':
@@ -80,8 +83,84 @@ class Table(SerializedInterface):
         else:
             match_index = range(0, self.__rows)
             return match_index
+    '''
 
-    def __get_field_data(self, field_name, index):
+    # 解析条件
+    def __parse_conditions(self, **conditions):
+        # 如果条件为空，数据索引为所有，反之为匹配条件的索引
+        if 'conditions' in conditions:
+            conditions = conditions['conditions']
+
+        # 如果条件为空，数据索引为所有，反之为匹配条件的索引
+        if not conditions:
+            match_index = range(0, self.__rows)
+        else:
+            # 解析条件，并返回符合条件的数据 field_name
+            name_tmp = self.__get_name_tmp(**conditions)
+
+            # 存放匹配上一次条件的索引
+            match_tmp = []
+
+            # 存放匹配所有条件的索引
+            match_index = []
+
+            # 定一个以标示，用于判断是否是第一次循环
+            is_first = True
+
+            # 遍历所有参数字段名
+            for field_name in name_tmp:
+                # 获取字段所有数据
+                data = self.__get_field_data(field_name)
+
+                # 获取字段类型
+                data_type = self.__get_field_type(field_name)
+
+                # 获取对应的判断条件
+                case = conditions[field_name]
+
+                # 如果 case 变量不属于 BaseCase 类，抛出类型错误异常
+                if not isinstance(case, BaseCase):
+                    raise TypeError('Type error, value must be "Case" object')
+
+                # 如果为第一次循环
+                if is_first:
+                    # 获取字段长度
+                    length = self.__get_field(field_name).length()
+
+                    # 遍历所有数据的索引
+                    for index in range(0, length):
+                        # 如果判断条件成立，则将数据对应的索引追加到两个匹配索引 list 中
+                        if case(data[index], data_type):
+                            match_tmp.append(index)
+                            match_index.append(index)
+
+                    # 使判断标识失效
+                    is_first = False
+
+                    # 重新进入循环
+                    continue
+
+                # 如果不是第一次循环，遍历上一次匹配成功的索引
+                for index in match_tmp:
+                    # 如果判断条件不成立，则从匹配所有条件的 list 中删除对应索引
+                    if not case(data[index], data_type):
+                        match_index.remove(index)
+
+                # 同步匹配结果到 match_tmp 中
+                match_tmp = match_index
+
+        # 返回所有匹配的索引
+        return match_index
+
+    def __get_field_type(self, field_name):
+        # 获取 Field 对象
+        field = self.__get_field(field_name)
+
+        # 调用 Field 对象的 get_type 方法并返回其获取到的结果
+        return field.get_type()
+
+
+    def __get_field_data(self,field_name,index):
         result = self.__field_objs[field_name].get_data(index)
         return result
 
@@ -255,6 +334,7 @@ class Table(SerializedInterface):
             table_obj.add_field(field_name, field_obj)
 
         # 返回 Table 对象
+        print('table_obj:',table_obj)
         return table_obj
 
 

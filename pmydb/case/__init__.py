@@ -37,7 +37,9 @@ def __less_and_equal(data, condition):
 
 def __like(data, condition):
     tmp = condition.split(LIKE_SYMBOL)
+    print('tmp:', tmp)
     length = len(tmp)
+    print('length:',length)
     if length == 3:
         condition = tmp[1]
     elif length == 2:
@@ -68,8 +70,9 @@ class BaseCase:
         self.condition = condition
         self.symbol = symbol
 
-    def __call__(self, data, data_type):
-
+    def __call__(self, data, data_type):    # 将类实例变成一个可调用对象
+        print('the function in case')
+        print(self.condition)
         self.condition = TYPE_MAP[data_type.value](self.condition)
 
         # 如果是字符串格式，消去可能出现的引号
@@ -78,9 +81,8 @@ class BaseCase:
 
         return SYMBOL_MAP[self.symbol](data, self.condition)
 
-# 将多种
+# 对应 not in 和 in 的情况
 class BaseListCase(BaseCase):
-
     def __call__(self, data, data_type):
         if not isinstance(self.condition, list):
             raise TypeError('condition type error, value must be %s' % data_type)
@@ -106,7 +108,7 @@ class IsNotCase(BaseCase):
         super().__init__(condition, symbol='!=')
 
 
-class InCase(BaseListCase):
+class InCase(BaseListCase):              # in case 是特别的
     def __init__(self, condition):
         super().__init__(condition, symbol='IN')
 
@@ -157,3 +159,6 @@ class RangeCase(BaseCase):
         return SYMBOL_MAP[self.symbol](data, self.condition)
 
 
+if '__main__' == __name__:
+    f_age = GreaterCase(30)
+    print(f_age)

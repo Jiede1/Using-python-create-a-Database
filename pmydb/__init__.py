@@ -38,7 +38,7 @@ class Engine:
 
         self.path = path
 
-        self.__load_databases()
+        self.__load_databases()        # 将以前的数据库，数据表load起来
 
 
         self.__format_type = format_type  # 数据默认返回格式
@@ -74,8 +74,8 @@ class Engine:
         self.__current_db = self.__database_objs[db_name]
 
     def serialized(self):
-        return SerializedInterface.json.dumps([  \
-             database.serialized() for database in self.__database_objs.values()  \
+        return SerializedInterface.json.dumps([
+             database.serialized() for database in self.__database_objs.values()
         ])
 
     #保存数据库
@@ -98,7 +98,7 @@ class Engine:
             self.__database_names.append(db_name)
             self.__database_objs[db_name] = database
 
-    #加载数据库
+    # 加载数据库
     def __load_databases(self):
         if not os.path.exists(self.path):
             return
@@ -113,7 +113,7 @@ class Engine:
     def commit(self):
         self.__dump_databases()
 
-    # 回滚数据库改动
+    # 回滚数据库改动，目前的实现有问题，不会判断以前的数据库表是否存在
     def rollback(self):
         self.__load_databases()
 
@@ -189,6 +189,8 @@ class Engine:
             tables = tmp
 
         return tables
+
+
 
 
 

@@ -160,14 +160,17 @@ class Table(SerializedInterface):
         return field.get_type()
 
 
-    def __get_field_data(self,field_name,index):
-        result = self.__field_objs[field_name].get_data(index)
-        return result
+    def __get_field_data(self,field_name,index=None):
+        # 获取 Field 对象
+        field = self.__get_field(field_name)
+
+        # 调用 Field 对象的 get_data 方法并返回其获取到的结果
+        return field.get_data(index)
 
     # 查询数据
     def search(self, fields, sort, format_type, **conditions):
         # 如果要查询的字段是“*”，那就代表返回所有字段对应的数据
-        # *conditions 放置其他查询条件，目前只支持查询哪些行，index = [1,2,...]
+        # **conditions 放置其他查询条件
         if fields == '*':
             fields = self.__field_names
         else:
@@ -279,7 +282,6 @@ class Table(SerializedInterface):
     # 插入数据
     def insert(self, **data):
         # 解析参数
-
         if 'data' in data:
             data = data['data']
 
@@ -334,7 +336,6 @@ class Table(SerializedInterface):
             table_obj.add_field(field_name, field_obj)
 
         # 返回 Table 对象
-        print('table_obj:',table_obj)
         return table_obj
 
 

@@ -18,7 +18,7 @@ class SQLParser:
         self.__pattern_map = {
             'SELECT': r'(SELECT|select) (.*) (FROM|from) (.*)',
             'UPDATE': r'(UPDATE|update) (.*) (SET|set) (.*)',
-            'INSERT': r'(INSERT|insert) (INTO|into) (.*) \((.*)\) (VALUES|values) \((.*)\)'
+            'INSERT': r'(INSERT|insert) (INTO|into) (.*) (\(.*\)) (VALUES|values) (\(.*\))'
         }
         self.SYMBOL_MAP = {
             'IN': InCase,
@@ -67,6 +67,7 @@ class SQLParser:
     def __get_comp(self, action):
         return re.compile(self.__action_map[action])
 
+    # -----------------** 基于数据表的操作 **---------------------#
     def __select(self, statement):
         comp = self.__get_comp('SELECT')
         ret = comp.findall(' '.join(statement))
@@ -110,5 +111,89 @@ class SQLParser:
         return None
 
     def __delete(self,statement):
-        pass
+        return {
+            'type':'delete',
+            'table':statement[2]
+        }
+    # 插入只支持"INSERT INTO 表名称 VALUES (值1, 值2,....)"
+    def __insert(self,statement):
+        comp = self.__get_comp('INSERT')
+        ret = comp.findall(' '.join(statement))
+
+        if ret and len(ret[0])==6:
+            ret_tmp = ret[0]
+            data = {
+                'type': 'insert',
+                'table': ret_tmp[2],
+                'data': {}
+            }
+            fields = ret_tmp[3].split(",")
+            values = ret_tmp[5].split(",")
+
+            for i in range(0, len(fields)):
+                field = fields[i]
+                value = values[i]
+                if "'" in value or '"' in value:
+                    value = value.replace('"', '').replace("'", '').strip()
+                else:
+                    try:
+                        value = int(value.strip())
+                    except:
+                        return None
+                data['data'][field] = value
+            return data
+        return None
+
+    # -----------------** 基于数据库的操作 **---------------------#
+    # 选择使用的数据库
+    def use(self,statement):
+        return {
+            'type':'use',
+            'database':statement[1]
+        }
+
+    # 退出
+    def __exit(self, _):
+        return {
+            'type': 'exit'
+        }
+
+    def __quit(self,_):
+        return {
+            'type': 'quit'
+        }
+
+    # 查看数据库列表或数据表 列表
+    def __show(self, statement):
+        kind = statement[1]
+
+        if kind.upper() == 'DATABASES':
+            return {
+                'type': 'show',
+                'kind': 'databases'
+            }
+        if kind.upper() == 'TABLES':
+            return {
+                'type': 'show',
+                'kind': 'tables'
+            }
+
+    # 删除数据库或数据表
+    def __drop(self, statement):
+        kind = statement[1]
+
+        if kind.upper() == 'DATABASES':
+            return {
+                'type': 'drop',
+                'kind': 'databases'
+            }
+        if kind.upper() == 'TABLES':
+            return {
+                'type': 'drop',
+                'kind': 'tables'
+            }
+
+
+
+
 

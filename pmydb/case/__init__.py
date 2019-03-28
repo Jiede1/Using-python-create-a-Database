@@ -35,7 +35,7 @@ def __less_and_equal(data, condition):
     return data <= condition
 
 
-def __like(data, condition):
+def __like(data, condition):   # 实现有瑕疵，不支持 %xxx 或 xxx%
     tmp = condition.split(LIKE_SYMBOL)
     print('tmp:', tmp)
     length = len(tmp)
@@ -70,9 +70,10 @@ class BaseCase:
         self.condition = condition
         self.symbol = symbol
 
-    def __call__(self, data, data_type):    # 将类实例变成一个可调用对象
-        print('the function in case')
-        print(self.condition)
+    # 将类实例变成一个可调用对象
+    def __call__(self, data, data_type):    # data 是将要比较的数据，data_type 是数据类型，condition 是标杆数据
+        # print('the function in case')
+        # print(self.condition)
         self.condition = TYPE_MAP[data_type.value](self.condition)
 
         # 如果是字符串格式，消去可能出现的引号

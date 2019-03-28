@@ -24,7 +24,7 @@ test1_data = e.search(table_name="t_test", f_age=GreaterCase(30))
 for i in test1_data:
     print(i)
 print("-" * 30)
-print("-"*5, "查询年龄在[10,40,50,60],id在[1,2,3,4]的用户", "-"*5)
+print("-"*5, "查询年龄在[10,40,50,60],f_id在[1,2,3,4]的用户", "-"*5)
 test1_data = e.search(table_name="t_test", f_age=InCase([10,40,50,60]),f_id=InCase([1,2,3,4]))
 for i in test1_data:
     print(i)

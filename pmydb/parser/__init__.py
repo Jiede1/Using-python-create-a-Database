@@ -63,6 +63,33 @@ class SQLParser:
         if action is None or 'type' not in action:
             raise Exception('Syntax Error for: %s' % statement)
 
+        action['conditions'] = {}    # conditions 条件
+
+        conditions = None
+
+        if len(statement) == 2:
+            conditions = self.__filter_space(statement[1].split(" "))
+
+        if conditions:
+            for index in range(0, len(conditions), 3):
+                field = conditions[index]
+                symbol = conditions[index + 1].upper()
+                condition = conditions[index + 2]
+
+                if symbol == 'RANGE':  # where range(0,1)
+                    condition_tmp = condition.replace("(", '').replace(")", '').split(",")
+                    start = condition_tmp[0]
+                    end = condition_tmp[1]
+                    case = self.SYMBOL_MAP[symbol](start, end)
+                elif symbol == 'IN' or symbol == 'NOT_IN':  # where not in (0,2)
+                    condition_tmp = condition.replace("(", '').replace(")", '').replace(" ", '').split(",")
+                    condition = condition_tmp
+                    case = self.SYMBOL_MAP[symbol](condition)
+                else:
+                    case = self.SYMBOL_MAP[symbol](condition)
+
+                action['conditions'][field] = case
+        return action
 
     def __get_comp(self, action):
         return re.compile(self.__action_map[action])
@@ -94,13 +121,13 @@ class SQLParser:
                 'table': ret[0][1],
                 'data': {}
             }
-            set_statement =ret[0][3].split(',')
+            set_statement = ret[0][3].split(',')
             for s in set_statement:
                 s = s.split('=')
                 field = s[0].strip()
                 value = s[1].strip()
                 if "'" in value or '"' in value:
-                    value = value.replace('"','').replace(",",'').strip()
+                    value = value.replace('"', '').replace(",", '').strip()
                 else:
                     try:
                         value = int(value.strip())

@@ -40,8 +40,20 @@ class Engine:
 
         self.__load_databases()        # 将以前的数据库，数据表load起来
 
-
         self.__format_type = format_type  # 数据默认返回格式
+
+        # 数据库映射表，衔接parser模块
+        self.__action_map = {
+            'insert': self.__insert,
+            'update': self.__update,
+            'search': self.__search,
+            'delete': self.__delete,
+            'drop': self.__drop,
+            'show': self.__show,
+            'use': self.__use,
+            'exit': self.__exit,
+            'quit':self.__quit
+        }
 
     # 创建数据库
     def create_database(self, database_name):
@@ -190,6 +202,42 @@ class Engine:
 
         return tables
 
+    def execute(self, statement):
+        pass
+
+    def __insert(self, action):
+        table = action['table']
+        data = action['data']
+
+        return self.insert(table, data=data)
+
+    def __update(self, action):
+        table = action['table']
+        data = action['data']
+        conditions = action['conditions']
+
+        return self.update(table, data, conditions=conditions)
+
+    def __search(self):
+        pass
+
+    def __delete(self):
+        pass
+
+    def __show(self):
+        pass
+
+    def __exit(self):
+        pass
+
+    def __drop(self):
+        pass
+
+    def __quit(self):
+        pass
+
+    def __use(self):
+        pass
 
 
 

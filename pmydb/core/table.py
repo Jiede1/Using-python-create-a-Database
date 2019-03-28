@@ -87,6 +87,7 @@ class Table(SerializedInterface):
 
     # 解析条件
     def __parse_conditions(self, **conditions):
+        # print(type(conditions),conditions)
         # 如果条件为空，数据索引为所有，反之为匹配条件的索引
         if 'conditions' in conditions:
             conditions = conditions['conditions']

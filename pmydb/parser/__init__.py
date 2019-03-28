@@ -57,6 +57,58 @@ class SQLParser:
         if action_type not in self.__action_map:
             raise Exception('Syntax Error for: %s' % statement)
 
+        # 根据字典得到对应的值
+        action = self.__action_map[action_type](base_statement)
 
-    def __select(self,statement):
+        if action is None or 'type' not in action:
+            raise Exception('Syntax Error for: %s' % statement)
+
+
+    def __get_comp(self, action):
+        return re.compile(self.__action_map[action])
+
+    def __select(self, statement):
+        comp = self.__get_comp('SELECT')
+        ret = comp.findall(' '.join(statement))
+
+        if ret and len(ret[0]) == 4:
+            fields = ret[0][1]
+            table = ret[0][3]
+
+            if fields != '*':
+                fields = [ field for field in fields.split(',') ]
+            return {
+                'type': 'search',
+                'table': table,
+                'fields': fields
+            }
+        return None
+    def __update(self,statement):
+        comp = self.__get_comp('UPDATE')
+        ret = comp.findall(' '.join(statement))
+
+        if ret and len(ret[0]) == 4:
+            data = {
+                'type': 'update',
+                'table': ret[0][1],
+                'data': {}
+            }
+            set_statement =ret[0][3].split(',')
+            for s in set_statement:
+                s = s.split('=')
+                field = s[0].strip()
+                value = s[1].strip()
+                if "'" in value or '"' in value:
+                    value = value.replace('"','').replace(",",'').strip()
+                else:
+                    try:
+                        value = int(value.strip())
+                    except:
+                        return None
+                data['data'][field] = value
+            return data
+        return None
+
+    def __delete(self,statement):
         pass
+

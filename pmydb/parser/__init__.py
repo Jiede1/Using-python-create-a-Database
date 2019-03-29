@@ -13,7 +13,12 @@ class SQLParser:
             'SELECT': self.__select,
             'UPDATE': self.__update,
             'DELETE': self.__delete,
-            'INSERT': self.__insert
+            'INSERT': self.__insert,
+            'USE': self.__use,
+            'EXIT': self.__exit,
+            'QUIT': self.__quit,
+            'SHOW': self.__show,
+            'DROP': self.__drop,
         }
         self.__pattern_map = {
             'SELECT': r'(SELECT|select) (.*) (FROM|from) (.*)',
@@ -40,7 +45,7 @@ class SQLParser:
             ret.append(x)
         return ret
 
-    def parse(self,statement):
+    def parse(self, statement):
         if 'where' in statement:
             statement = statement.split("where")
         else:
@@ -96,6 +101,7 @@ class SQLParser:
 
     # -----------------** 基于数据表的操作 **---------------------#
     def __select(self, statement):
+        print('statement:',statement)
         comp = self.__get_comp('SELECT')
         ret = comp.findall(' '.join(statement))
 
@@ -104,7 +110,7 @@ class SQLParser:
             table = ret[0][3]
 
             if fields != '*':
-                fields = [ field for field in fields.split(',') ]
+                fields = [field.strip() for field in fields.split(',')]
             return {
                 'type': 'search',
                 'table': table,
@@ -173,10 +179,10 @@ class SQLParser:
 
     # -----------------** 基于数据库的操作 **---------------------#
     # 选择使用的数据库
-    def use(self,statement):
+    def __use(self, statement):
         return {
-            'type':'use',
-            'database':statement[1]
+            'type': 'use',
+            'database': statement[1]
         }
 
     # 退出

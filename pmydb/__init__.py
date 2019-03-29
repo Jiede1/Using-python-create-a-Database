@@ -4,6 +4,8 @@
 
 from pmydb.core.database import Database
 from pmydb.core import SerializedInterface
+from pmydb.parser import *
+import prettytable
 import base64
 import os
 
@@ -202,14 +204,23 @@ class Engine:
 
         return tables
 
+    # 添加执行函数,statement为SQL字符串
     def execute(self, statement):
-        pass
+        action = SQLParser().parse(statement)
+
+        ret = 0
+        if action['type'] in self.__action_map:
+            ret = self.__action_map[action['type']](action)
+
+            if action['type'] in  ['insert', 'update', 'delete', 'create', 'drop']:
+                self.commit()
+        return ret
 
     def __insert(self, action):
         table = action['table']
         data = action['data']
 
-        return self.insert(table, data=data)
+        return self.insert(table, data=data)   # insert 插入不需要考虑where情况，因此没有condition
 
     def __update(self, action):
         table = action['table']
@@ -218,26 +229,60 @@ class Engine:
 
         return self.update(table, data, conditions=conditions)
 
-    def __search(self):
-        pass
+    def __search(self, action):
+        table = action['table']
+        fields = action['field']
+        conditions = action['conditions']
 
-    def __delete(self):
-        pass
+        return self.update(table, fields=fields, conditions=conditions)
 
-    def __show(self):
-        pass
+    def __delete(self, action):
+        table = action['table']
+        conditions = action['conditions']
 
-    def __exit(self):
-        pass
+        return self.delete(table, conditions=conditions)
 
-    def __drop(self):
-        pass
+    def __show(self, action):
+        if action['kind'] == 'databases':
+            return self.get_database(format_type='dict')
+        elif action['kind'] == 'tables':
+            return self.get_table(format_type='dict')
 
-    def __quit(self):
-        pass
+    def __exit(self, _):
+        return 'exit'
 
-    def __use(self):
-        pass
+    def __drop(self, action):
+        if action['kind'] == 'database':
+            return self.drop_database(action['name'])
+        return self.drop_table(action['name'])
+
+    def __quit(self, _):
+        return 'quit'
+
+    def __use(self, action):
+        return self.select_db(action['database'])
+
+    # 执行，命令行入口接口，在此输入sql
+    def run(self):
+        while True:
+            # 获得SQL输入
+            statement = input('\033[00;37mpmydb> ')
+            # print(statement)
+            try:
+                ret = self.execute(statement)
+                print('ret:', ret)
+                if ret in ['exit', 'quit']:
+                    print('Goodbye!')
+                    return
+                if ret:
+                    pt = prettytable.PrettyTable(ret[0].keys())
+                    pt.align = 'l'
+                    for line in ret:
+                        pt.align = 'r'
+                        pt.add_row(line.values())
+                    print(pt)
+            except Exception as exc:
+                print('\033[00;31m' + str(exc))
 
 
 

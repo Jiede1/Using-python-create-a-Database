@@ -64,9 +64,9 @@ class SQLParser:
             raise Exception('Syntax Error for: %s' % statement)
 
         # 根据字典得到对应的值
-        print('parse statement:',statement,action_type)
+        # print('parse statement:',statement,action_type)
         action = self.__action_map[action_type](base_statement)
-        print('parse action:', action)
+        # print('parse action:', action)
 
         if action is None or 'type' not in action:
             raise Exception('Syntax Error for: %s' % statement)
@@ -107,7 +107,7 @@ class SQLParser:
         # print('statement:', statement)
         comp = self.__get_comp('SELECT')
         ret = comp.findall(' '.join(statement))
-        print(ret, ' '.join(statement))
+        # print(ret, ' '.join(statement))
         if ret and len(ret[0]) == 4:
             fields = ret[0][1]
             table = ret[0][3]
@@ -155,7 +155,7 @@ class SQLParser:
     def __insert(self,statement):
         comp = self.__get_comp('INSERT')
         ret = comp.findall(' '.join(statement))
-        print('parser __insert ret:',ret)
+        # print('parser __insert ret:',ret)
 
         if ret and len(ret[0]) == 6:
             ret_tmp = ret[0]

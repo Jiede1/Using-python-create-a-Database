@@ -37,9 +37,9 @@ def __less_and_equal(data, condition):
 
 def __like(data, condition):   # 实现有瑕疵，不支持 %xxx 或 xxx%
     tmp = condition.split(LIKE_SYMBOL)
-    print('tmp:', tmp)
+    # print('tmp:', tmp)
     length = len(tmp)
-    print('length:',length)
+    # print('length:',length)
     if length == 3:
         condition = tmp[1]
     elif length == 2:

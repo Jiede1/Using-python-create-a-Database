@@ -156,7 +156,8 @@ class Field(SerializedInterface):
     def deserialized(data):
         # 将数据转化为 Json 对象
         json_data = SerializedInterface.json.loads(data)
-        print('json_data:',json_data)
+        # print('each Field data when deserialized(field.py): ')
+        print('json_data:', json_data)
 
         # 转换 Json 对象中 key 的值为枚举类 FieldKey 中的属性
         keys = [FieldKey(key) for key in json_data['keys']]

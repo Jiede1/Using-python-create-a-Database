@@ -11,7 +11,7 @@ e.insert(table_name='t_test', f_name='shiyanlou_004', f_age=40)
 e.insert(table_name='t_test', f_name='xiaoming', f_age=50)
 e.insert(table_name='t_test', f_name='echo', f_age=50)
 '''
-
+print('\n')
 print("-"*5, "这里是表 t_test 的全部数据", "-"*5)
 all_data = e.search("t_test")
 for i in all_data:
@@ -24,8 +24,8 @@ test1_data = e.search(table_name="t_test", fields=['f_id'],  f_age=GreaterCase(5
 for i in test1_data:
     print(i)
 print("-" * 30)
-print("-"*5, "查询年龄在[10,40,50,60],f_id在[1,2,3,4]的用户", "-"*5)
-test1_data = e.search(table_name="t_test", f_age=InCase([10,40,50,60]),f_id=InCase([1,2,3,4]))
+print("-"*5, "查询年龄在[30,40,50,60],f_id在[3,4,5]的用户", "-"*5)
+test1_data = e.search(table_name="t_test", f_age=InCase([30,40,50,60]),f_id=InCase([3,4,5]))
 for i in test1_data:
     print(i)
 print("-" * 30)
@@ -40,7 +40,7 @@ for i in test1_data:
     print(i)
 print("-" * 30)
 
-print("-"*5, "格式化查询test_db", "-"*5)
+print("-"*5, "查询test_db全部数据", "-"*5)
 test1_data = e.search(table_name="t_test", fields='*')
 for i in test1_data:
     print(i)

@@ -134,6 +134,8 @@ class Engine:
     # 查询指定数据表数据
     def search(self, table_name, fields='*', sort='ASC', **conditions):
         # 通过数据表名字获取指定的 Table 对象，再调用它的 search 方法获取查询结果
+        print('into search')
+        print(table_name, fields, sort, conditions)
         return self.__get_table(table_name).search(fields=fields, sort=sort, format_type=self.__format_type,
                                                    **conditions)
 
@@ -207,13 +209,15 @@ class Engine:
     # 添加执行函数,statement为SQL字符串
     def execute(self, statement):
         action = SQLParser().parse(statement)
+        print('execute action:', action)
 
         ret = 0
         if action['type'] in self.__action_map:
             ret = self.__action_map[action['type']](action)
 
-            if action['type'] in  ['insert', 'update', 'delete', 'create', 'drop']:
+            if action['type'] in ['insert', 'update', 'delete', 'create', 'drop']:
                 self.commit()
+        print('execute ret:', ret)
         return ret
 
     def __insert(self, action):
@@ -230,11 +234,12 @@ class Engine:
         return self.update(table, data, conditions=conditions)
 
     def __search(self, action):
+        print('engine __search:', action)
         table = action['table']
-        fields = action['field']
+        fields = action['fields']
         conditions = action['conditions']
 
-        return self.update(table, fields=fields, conditions=conditions)
+        return self.search(table, fields=fields, conditions=conditions)
 
     def __delete(self, action):
         table = action['table']
@@ -269,6 +274,7 @@ class Engine:
             statement = input('\033[00;37mpmydb> ')
             # print(statement)
             try:
+                print(type(statement),statement)
                 ret = self.execute(statement)
                 print('ret:', ret)
                 if ret in ['exit', 'quit']:
@@ -284,7 +290,29 @@ class Engine:
             except Exception as exc:
                 print('\033[00;31m' + str(exc))
 
-
+    # 执行，命令行入口接口，在此输入sql
+    def run_test(self):
+        statements = ['use test_db', "insert into t_test (f_name,f_age) values ('test',30)"]
+        for i in range(2):
+            # 获得SQL输入
+            statement = statements[i]
+            # print(statement)
+            try:
+                print(type(statement), statement)
+                ret = self.execute(statement)
+                print('ret:', ret)
+                if ret in ['exit', 'quit']:
+                    print('Goodbye!')
+                    return
+                if ret:
+                    pt = prettytable.PrettyTable(ret[0].keys())
+                    pt.align = 'l'
+                    for line in ret:
+                        pt.align = 'r'
+                        pt.add_row(line.values())
+                    print(pt)
+            except Exception as exc:
+                print('\033[00;31m' + str(exc))
 
 
 

@@ -1,4 +1,4 @@
 from pmydb import *
 
 e = Engine()
-e.run()
+e.run_test()

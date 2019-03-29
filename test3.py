@@ -19,8 +19,8 @@ for i in all_data:
 print("-" * 30)
 
 
-print("-"*5, "查询年龄在三十岁以上的用户", "-"*5)
-test1_data = e.search(table_name="t_test", f_age=GreaterCase(30))
+print("-"*5, "查询年龄在5岁以上的用户", "-"*5)
+test1_data = e.search(table_name="t_test", fields=['f_id'],  f_age=GreaterCase(5))
 for i in test1_data:
     print(i)
 print("-" * 30)
@@ -36,6 +36,12 @@ for i in test1_data:
 print("-" * 30)
 print("-"*5, "查询f_name类似ou_001的用户", "-"*5)
 test1_data = e.search(table_name="t_test", f_name=LikeCase('ou_001'))
+for i in test1_data:
+    print(i)
+print("-" * 30)
+
+print("-"*5, "格式化查询test_db", "-"*5)
+test1_data = e.search(table_name="t_test", fields='*')
 for i in test1_data:
     print(i)
 print("-" * 30)

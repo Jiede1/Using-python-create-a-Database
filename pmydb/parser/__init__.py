@@ -23,7 +23,8 @@ class SQLParser:
         self.__pattern_map = {
             'SELECT': r'(SELECT|select) (.*) (FROM|from) (.*)',
             'UPDATE': r'(UPDATE|update) (.*) (SET|set) (.*)',
-            'INSERT': r'(INSERT|insert) (INTO|into) (.*) (\(.*\)) (VALUES|values) (\(.*\))'
+            #'INSERT': r'(INSERT|insert) (INTO|into) (.*) (\(.*\)) (VALUES|values) (\(.*\))'
+            'INSERT': r'(INSERT|insert) (INTO|into) (.*) \((.*)\) (VALUES|values) \((.*)\)'
         }
         self.SYMBOL_MAP = {
             'IN': InCase,
@@ -63,7 +64,9 @@ class SQLParser:
             raise Exception('Syntax Error for: %s' % statement)
 
         # 根据字典得到对应的值
+        print('parse statement:',statement,action_type)
         action = self.__action_map[action_type](base_statement)
+        print('parse action:', action)
 
         if action is None or 'type' not in action:
             raise Exception('Syntax Error for: %s' % statement)
@@ -97,14 +100,14 @@ class SQLParser:
         return action
 
     def __get_comp(self, action):
-        return re.compile(self.__action_map[action])
+        return re.compile(self.__pattern_map[action])
 
     # -----------------** 基于数据表的操作 **---------------------#
     def __select(self, statement):
-        print('statement:',statement)
+        # print('statement:', statement)
         comp = self.__get_comp('SELECT')
         ret = comp.findall(' '.join(statement))
-
+        print(ret, ' '.join(statement))
         if ret and len(ret[0]) == 4:
             fields = ret[0][1]
             table = ret[0][3]
@@ -152,8 +155,9 @@ class SQLParser:
     def __insert(self,statement):
         comp = self.__get_comp('INSERT')
         ret = comp.findall(' '.join(statement))
+        print('parser __insert ret:',ret)
 
-        if ret and len(ret[0])==6:
+        if ret and len(ret[0]) == 6:
             ret_tmp = ret[0]
             data = {
                 'type': 'insert',
@@ -162,6 +166,7 @@ class SQLParser:
             }
             fields = ret_tmp[3].split(",")
             values = ret_tmp[5].split(",")
+            print('parser __insert fields:', fields)
 
             for i in range(0, len(fields)):
                 field = fields[i]
@@ -227,6 +232,8 @@ class SQLParser:
             }
 
 
+if __name__ == '__main__':
+    SQLParser().parse('select f_id from t_test')
 
 
 

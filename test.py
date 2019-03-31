@@ -95,6 +95,7 @@ def mp(**data):
     return data.keys()
 print(pp(da=2))
 
+'''
 from pmydb import Engine
 from pmydb.core.field import Field, FieldType, FieldKey
 
@@ -119,4 +120,4 @@ ret = e.search('t_test')
 for row in ret:
     print('row:', row)
 print(FieldType.INT.value)
-
+'''

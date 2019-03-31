@@ -149,7 +149,7 @@ class SQLParser:
     def __delete(self,statement):
         return {
             'type':'delete',
-            'table':statement[2]
+            'table': statement[2]
         }
     # 插入只支持"INSERT INTO 表名称 VALUES (值1, 值2,....)"
     def __insert(self,statement):

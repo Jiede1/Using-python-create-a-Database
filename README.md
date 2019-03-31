@@ -2,8 +2,11 @@
 
 先直接上数据库完成后的测试图：  
 运行test4.py  
-![运行test4.py](https://github.com/Jiede1/Using-python-create-a-Database/blob/master/picture/test.PNG)
-![运行test4.py](https://github.com/Jiede1/Using-python-create-a-Database/blob/master/picture/test1.PNG)
+![运行test4.py](https://github.com/Jiede1/Using-python-create-a-Database/blob/master/picture/test.PNG)  
+![运行test4.py](https://github.com/Jiede1/Using-python-create-a-Database/blob/master/picture/test1.PNG)  
+![运行test3.py](https://github.com/Jiede1/Using-python-create-a-Database/blob/master/picture/test30.PNG)  
+![运行test3.py](https://github.com/Jiede1/Using-python-create-a-Database/blob/master/picture/test31.PNG)  
+  
 ### 前言  
 在实现该数据库之前，先整理一下我对关系型数据库的理解：  
 * 关系型数据库存储的是结构化的数据，数据是有顺序的，不能打乱  
@@ -32,7 +35,9 @@
   
 ### 数据库架构  
 
-
+#### **数据库的详细架构内容，笔者在博客上阐述了。有意者前往（要不readme.md要敲很多字），博客地址：https://blog.csdn.net/jiede1/article/details/88921007**  
+  
+![架构图](https://github.com/Jiede1/Using-python-create-a-Database/blob/master/picture/%E6%9E%B6%E6%9E%84.PNG)
 ### 数据库各个模块功能需求  
 1.数据库的组成
 数据库包括七个模块，数据库模块，数据表模块，数据字段模块，数据引擎模块，条件模块，SQL 语句解析模块，异常处理模块
@@ -77,4 +82,6 @@
  test3.py 全面测试数据库的查询  
  test4.py 基于SQL命令测试数据库操作  
 
-目前初步测试通过  
+目前初步测试通过 
+
+### 读者如果有问题，可以在GitHub上留言我，也可以去我博客下留言

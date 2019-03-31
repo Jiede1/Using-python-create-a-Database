@@ -19,7 +19,7 @@ class Table(SerializedInterface):
             # 进行字段添加
             self.add_field(field_name, field_obj)
 
-    def add_field(self,field_name,field_obj,value=None):  #第三个参数则是为新加字段在补足长度时使用的初始值
+    def add_field(self,field_name,field_obj,value=None):  # 第三个参数则是为新加字段在补足长度时使用的初始值
         # 如果新添加的字段名已存在，抛出字段已存在异常
         if field_name in self.__field_names:
             raise Exception('Field Exists')

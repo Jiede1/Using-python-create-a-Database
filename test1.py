@@ -1,3 +1,7 @@
+# 该文件用于创建测试用的数据库，笔者已经创建，不用运行了，如果读者想运行，先删除同一目录下的db.data
+# db.data是序列化后的测试数据库
+
+'''
 from pmydb import Engine
 from pmydb.core import FieldKey,FieldType
 from pmydb.core.field import Field
@@ -26,3 +30,4 @@ for row in ret:
 e.commit()    # 将数据存起来，覆盖掉以前的数据
 #e.rollback()   # 将以前的数据load起来
 print(e.get_database())
+'''

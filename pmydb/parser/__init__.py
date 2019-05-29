@@ -15,6 +15,7 @@ class SQLParser:
             'DELETE': self.__delete,
             'INSERT': self.__insert,
             'USE': self.__use,
+            'CREATE': self.__create,
             'EXIT': self.__exit,
             'QUIT': self.__quit,
             'SHOW': self.__show,
@@ -24,7 +25,7 @@ class SQLParser:
             'SELECT': r'(SELECT|select) (.*) (FROM|from) (.*)',
             'UPDATE': r'(UPDATE|update) (.*) (SET|set) (.*)',
             #'INSERT': r'(INSERT|insert) (INTO|into) (.*) (\(.*\)) (VALUES|values) (\(.*\))'
-            'INSERT': r'(INSERT|insert) (INTO|into) (.*) \((.*)\) (VALUES|values) \((.*)\)'
+            'INSERT': r'(INSERT|insert) (INTO|into) (.*) \((.*)\) (VALUES|values) \((.*)\)',
         }
         self.SYMBOL_MAP = {
             'IN': InCase,
@@ -51,6 +52,8 @@ class SQLParser:
             statement = statement.split("where")
         else:
             statement = statement.split("WHERE")
+        
+        # 基于空格实现SQL语句的split，取出关键字
         base_statement = self.__filter_space(statement[0].split(" "))
 
         # SQL 语句一般由最少三个关键字组成，这里设定长度小于 2 时，又非退出等命令，则为错误语法
@@ -188,6 +191,12 @@ class SQLParser:
         return {
             'type': 'use',
             'database': statement[1]
+        }
+
+    def __create(self, statement):
+        return {
+            'type': 'create',
+            'database': statement[2]
         }
 
     # 退出

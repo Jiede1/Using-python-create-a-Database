@@ -54,7 +54,8 @@ class Engine:
             'show': self.__show,
             'use': self.__use,
             'exit': self.__exit,
-            'quit':self.__quit
+            'quit':self.__quit,
+            'create': self.__create,
         }
 
     # 创建数据库
@@ -266,6 +267,9 @@ class Engine:
 
     def __use(self, action):
         return self.select_db(action['database'])
+    
+    def __create(self, action):
+        return self.create_database(action['database'])
 
     # 执行，命令行入口接口，在此输入sql
     def run(self):
@@ -292,7 +296,8 @@ class Engine:
 
     # testcase 执行，命令行入口接口，在此输入sql
     def run_test(self):
-        statements = ['use test_db', "insert into t_test (f_name,f_age) values ('test',30)"]
+        # statements = ['use test_db', "insert into t_test (f_name,f_age) values ('test',30)"]
+        statements = ['create database xyxdb','use xyxdb']
         for i in range(2):
             # 获得SQL输入
             statement = statements[i]
